@@ -3,7 +3,7 @@ module.exports = {
     pages: {
         index: {
             // 页面入口 entry for the page
-            entry: './src/index/login.js',
+            entry: './src/index/main.js',
             // 页面模板 the source template
             template: './public/index.html',
             // build时输出的文件名
