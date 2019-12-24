@@ -76,6 +76,9 @@
                 this.$refs[loginForm].validate((valid) => {
                     if (valid) {
                         this.loading = true;
+
+                        // this.$store.
+
                         setTimeout(() => {
                             this.$store.commit('login', this.loginForm);
                             this.$router.push('/');
