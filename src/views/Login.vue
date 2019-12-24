@@ -1,42 +1,53 @@
 <template>
     <div  class="login-container">
-        <el-form ref="loginForm" :model="loginForm" autocomplete="on" class="login-form">
+        <el-form :rules="rules" ref="loginForm" :model="loginForm" autocomplete="on" class="login-form">
 
             <div class="title-container">
                 <h3 class="title">Login Form</h3>
             </div>
 
             <el-form-item prop="username">
+                <span class="svg-container">
+                    <svg-icon icon-class="user" />
+                </span>
                 <el-input
                         v-model="loginForm.username"
-                        prefix-icon="el-icon-user-solid"
                         placeholder="Username"
                         autocomplete="on"
                 />
             </el-form-item>
+
             <el-form-item prop="password">
+                <span class="svg-container">
+                    <svg-icon icon-class="password" />
+                </span>
                 <el-input
+                        :type="passwordType"
                         v-model="loginForm.password"
-                        prefix-icon="el-icon-lock"
                         placeholder="Password"
                         autocomplete="on"
                 />
+                <span class="show-pwd" @click="showPwd">
+                    <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+                </span>
             </el-form-item>
-            <el-button type="primary" style="width:100%;margin-bottom:30px;" >Login</el-button>
+
+            <el-button type="primary"
+                       @click="submitForm('loginForm')"
+                       :loading="loading"
+                       style="width:100%;margin-bottom:30px;"
+            >
+                Login
+            </el-button>
         </el-form>
 
-        <el-dialog title="Or connect with" :visible.sync="showDialog">
-            Can not be simulated on local, so please combine you own business simulation! ! !
-            <br>
-            <br>
-            <br>
-            <social-sign />
-        </el-dialog>
+
     </div>
 
 </template>
 
 <script>
+
     export default {
         name: "Login",
         data() {
@@ -45,10 +56,48 @@
                     username: '',
                     password: ''
                 },
+                rules: {
+                    username: [
+                        { required: true, message: 'Please enter the user name', trigger: 'blur' },
+                        { min: 3, max: 10, message: 'Input length 3-10', trigger: 'blur' }
+                    ],
+                    password: [
+                        { required: true, message: 'Please enter the password', trigger: 'blur' },
+                        { min: 5, max: 15, message: 'Input length 5-15', trigger: 'blur' }
+                    ]
+                },
+                passwordType: 'password',
+                loading: false,
             }
         },
+        methods: {
+            submitForm(loginForm) {
+                window.console.log(this);
+                this.$refs[loginForm].validate((valid) => {
+                    if (valid) {
+                        this.loading = true;
+                        setTimeout(() => {
+                            this.$store.commit('login', this.loginForm);
+                            this.$router.push('/');
+                        }, 500);
+
+                    } else {
+                        window.console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            showPwd() {
+                if (this.passwordType === 'password') {
+                    this.passwordType = ''
+                } else {
+                    this.passwordType = 'password'
+                }
+            },
+        }
     }
 </script>
+
 
 <style lang="scss">
     /* 修复input 背景不协调 和光标变色 */
@@ -58,6 +107,11 @@
     $light_gray:#fff;
     $cursor: #fff;
 
+    @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
+        .login-container .el-input input {
+            color: $cursor;
+        }
+    }
 
     /* reset element-ui css */
     .login-container {
@@ -71,7 +125,7 @@
                 border: 0px;
                 -webkit-appearance: none;
                 border-radius: 0px;
-                padding: 12px 5px 12px 35px;
+                padding: 12px 5px 12px 15px;
                 color: $light_gray;
                 height: 47px;
                 caret-color: $cursor;
@@ -93,10 +147,14 @@
 </style>
 
 <style lang="scss" scoped>
+    $bg:#2d3a4b;
+    $dark_gray:#889aa4;
+    $light_gray:#eee;
+
     .login-container {
         min-height: 100%;
         width: 100%;
-        background-color: #2d3a4b;
+        background-color: $bg;
         overflow: hidden;
 
         .login-form {
@@ -106,14 +164,14 @@
             padding: 160px 35px 0;
             margin: 0 auto;
             overflow: hidden;
+        }
 
-            .svg-container {
-                padding: 6px 5px 6px 15px;
-                color: #2d3a4b;
-                vertical-align: middle;
-                width: 30px;
-                display: inline-block;
-            }
+        .svg-container {
+            padding: 6px 5px 6px 15px;
+            color: $dark_gray;
+            vertical-align: middle;
+            width: 30px;
+            display: inline-block;
         }
 
         .title-container {
@@ -121,11 +179,21 @@
 
             .title {
                 font-size: 26px;
-                color: #fff;
+                color: $light_gray;
                 margin: 0px auto 40px auto;
                 text-align: center;
                 font-weight: bold;
             }
+        }
+
+        .show-pwd {
+            position: absolute;
+            right: 10px;
+            top: 7px;
+            font-size: 16px;
+            color: $dark_gray;
+            cursor: pointer;
+            user-select: none;
         }
     }
 </style>

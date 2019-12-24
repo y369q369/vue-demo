@@ -1,9 +1,17 @@
 import Vue from 'vue'
-import App from './App.vue'
+
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+
+import App from './App.vue'
 import router from './router';
-import store from './store/store'
+import store from './store'
+
+import 'normalize.css/normalize.css'  // A modern alternative to CSS resets
+import './index.scss'                 // global css
+// import './styles/index.scss'
+
+import './icons'                      // icon
 
 Vue.use(ElementUI);
 
@@ -17,10 +25,6 @@ router.beforeEach((to, from, next) =>  {
       path: "/login"
     })
   }
-  window.console.log(store.state);
-  window.console.log(to);
-  window.console.log(from);
-  window.console.log(next);
 })
 
 new Vue({

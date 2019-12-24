@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="app">
     <!--<router-link to="/">Home</router-link>
     <router-link to="/login">Login</router-link>-->
     <router-view></router-view>
@@ -15,10 +15,10 @@ export default {
   methods: {
     getRoute: function () {
       window.console.log(this.$route);
-    },
-    addNum() {
-      this.$store.commit('increaseCount', 3);
     }
   }
 }
 </script>
+
+<style>
+</style>

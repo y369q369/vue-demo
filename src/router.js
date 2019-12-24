@@ -4,7 +4,7 @@ import Login from "./views/Login";
 
 Vue.use(VueRouter)
 
-export default new VueRouter({
+const router = new VueRouter({
     mode: 'history',
     base: '/',
     // routes // (缩写) 相当于 routes: routes
@@ -21,3 +21,5 @@ export default new VueRouter({
         }
     ]
 })
+
+export default router
