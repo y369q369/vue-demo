@@ -13,7 +13,10 @@ const store = new Vuex.Store({
         login(state, info) {
             state.userInfo = info
         }
-    }
+    },
+    plugins: [createPersistedState(
+        // {storage: window.sessionStorage}            // 默认存储: localStorage里 ，改存: session中
+    )]
 })
 
 export default store
