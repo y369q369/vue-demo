@@ -72,18 +72,17 @@
         },
         methods: {
             submitForm(loginForm) {
-                window.console.log(this);
                 this.$refs[loginForm].validate((valid) => {
                     if (valid) {
-                        this.loading = true;
+                        // this.loading = true;
 
-                        // this.$store.
-
-                        setTimeout(() => {
-                            this.$store.commit('login', this.loginForm);
+                        const user = this.$store.getters.getUserByName(this.loginForm.username);
+                        window.console.log(user);
+                        if(user && user.password === this.loginForm.password) {
+                            window.console.log(user.role);
+                            this.$store.commit('login', user);
                             this.$router.push('/');
-                        }, 500);
-
+                        }
                     } else {
                         window.console.log('error submit!!');
                         return false;

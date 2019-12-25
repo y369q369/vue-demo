@@ -4,6 +4,18 @@ import Login from "./views/Login";
 
 Vue.use(VueRouter)
 
+export const admin = [{
+    path: '/admin',
+    name: 'admin',
+    component: () => import('./views/admin/Admin'),
+}]
+
+export const user = [{
+    path: '/user',
+    name: 'user',
+    component: () => import('./views/user/User'),
+}]
+
 const router = new VueRouter({
     mode: 'history',
     base: '/',
@@ -18,6 +30,16 @@ const router = new VueRouter({
             path: '/login',
             name: 'login',
             component: Login,
+        },
+        {
+            path: '/admin',
+            name: 'admin',
+            component: () => import('./views/admin/Admin'),
+        },
+        {
+            path: '/user',
+            name: 'user',
+            component: () => import('./views/user/User'),
         }
     ]
 })
