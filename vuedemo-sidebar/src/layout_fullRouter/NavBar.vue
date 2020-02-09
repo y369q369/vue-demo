@@ -1,22 +1,30 @@
 <template>
     <div class="navbar">
-        <div class="hamburger-container">
-            <svg-icon :icon-class="dent" @click="changeDent" />
+        <div class="shrink-container"  @click="changeDent">
+            <svg-icon :icon-class="dent" />
         </div>
+        <breadcrumb id="breadcrumb-container" class="breadcrumb-container"></breadcrumb>
     </div>
 </template>
 
 <script>
+    import Breadcrumb from "../components/Breadcrumb";
+
     export default {
         name: "NavBar",
+        components: {Breadcrumb},
         data() {
             return {
-                dent: 'outdent',
+                dent: this.$store.getters.getSideBar,
             }
+        },
+        comments: {
+            Breadcrumb,
         },
         methods:{
             changeDent() {
-                this.dent = this.dent === 'outdent' ? 'indent' : 'outdent'
+                this.dent = this.dent === 'outdent' ? 'indent' : 'outdent';
+                this.$store.commit('setSideBar', this.dent === 'outdent');
             },
         }
     }
@@ -30,7 +38,7 @@
         background: #fff;
         box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
 
-        .hamburger-container {
+        .shrink-container {
             line-height: 46px;
             height: 100%;
             float: left;
@@ -42,6 +50,10 @@
             &:hover {
                  background: rgba(0, 0, 0, .025)
              }
+        }
+
+        .breadcrumb-container {
+            float: left;
         }
     }
 </style>

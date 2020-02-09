@@ -1,5 +1,5 @@
 <template>
-    <div class="app-wrapper">
+    <div :class="showSide" class="app-wrapper">
         <SideBar class="sidebar-container"></SideBar>
 
         <div class="main-container">
@@ -9,20 +9,28 @@
 </template>
 
 <script>
-    import SideBar from "@/layout/SideBar";
-    import NavBar from "@/layout/NavBar";
+    import SideBar from "./SideBar";
+    import NavBar from "./NavBar";
 
     export default {
-        name: "Layout",
+        name: "Layout_noRouter",
         components: {
             SideBar,
             NavBar
+        },
+        computed: {
+            showSide() {
+                return {
+                    hideSidebar: !this.$store.state.showSideBar,
+                }
+            }
         }
     }
 </script>
 
 <style scoped lang="scss" >
-    $sideBarWidth: 210px;
+    $showSideBarWidth: 210px;
+    $hideSideBarWidth: 54px;
     $menuBg:#304156;
 
     .app-wrapper {
@@ -31,8 +39,7 @@
         width: 100%;
 
         .sidebar-container {
-            transition: width 0.28s;
-            width: $sideBarWidth !important;
+            width: $showSideBarWidth !important;
             background-color: $menuBg;
             height: 100%;
             position: fixed;
@@ -47,8 +54,19 @@
         .main-container {
             min-height: 100%;
             transition: margin-left .28s;
-            margin-left: 210px;
+            margin-left: $showSideBarWidth;
             position: relative;
+        }
+    }
+
+    .hideSidebar {
+        .sidebar-container {
+            width: $hideSideBarWidth !important;
+
+        }
+
+        .main-container {
+            margin-left: $hideSideBarWidth;
         }
     }
 </style>

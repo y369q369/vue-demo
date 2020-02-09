@@ -1,13 +1,12 @@
 <template>
     <div>
-
-
         <el-menu default-active="1-4-1"
                  class="el-menu-vertical-demo"
                  :collapse="isCollapse"
                  background-color="#304156"
                  text-color="#fff"
-                 active-text-color="#409EFF">
+                 active-text-color="#409EFF"
+                 :collapse-transition="false">
             <el-submenu index="1" >
                 <template slot="title">
                     <svg-icon icon-class="db" />
@@ -34,7 +33,6 @@
                 <span slot="title">集群</span>
             </el-menu-item>
         </el-menu>
-        <p @click="test" style="background: skyblue; color: red; width: 200px; height: 200px">测试是啊</p>
     </div>
 
 </template>
@@ -44,15 +42,13 @@
         name: "SideBar",
         data() {
             return {
-                isCollapse: true
             };
         },
-        methods: {
-            test() {
-                this.isCollapse = !this.isCollapse;
-            }
-
-        }
+        computed: {
+            isCollapse(){
+                return !this.$store.state.showSideBar
+            },
+        },
     }
 </script>
 
