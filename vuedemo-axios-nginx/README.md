@@ -17,7 +17,7 @@
 
 ### 1. 跨域问题
 
-No 'Access-Control-Allow-Origin' header is present on the requested resource. 
+No 'Access-Control-Allow-Origin' header is present on the requested resource.
 
 解决方案： 开发环境 - Vue Cli的代理模式解决:https://cli.vuejs.org/zh/config/#devserver
 
@@ -103,5 +103,35 @@ http {
         }
     }
 }    
+```
+
+### 5. axios请求
+
+两种方式：第二种方式 this 还可以指向vues实例本身（ES6的箭头函数，可以和父方法共享变量）
+
+```
+// 方式一
+this.Axios.post('restTemplate/restTemplatePost2', this.Qs.stringify({
+	param: this.data1
+}))
+.then(function (response) {
+	window.console.log(response.data);
+	alert("发送一般数据成功, 返回值 ： " + response.data.key);
+})
+.catch(function (error) {
+	window.console.log(error);
+});
+
+// 方式二
+this.Axios.post('restTemplate/restTemplatePost2', this.Qs.stringify({
+	param: this.data1
+}))
+.then(function (response) {
+	window.console.log(response.data);
+	alert(this.data);
+})
+.catch(function (error) {
+	window.console.log(error);
+});
 ```
 
