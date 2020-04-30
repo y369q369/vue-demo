@@ -1,202 +1,117 @@
 <template>
-    <!-- 图的画布容器 -->
-    <div id="mountNode"></div>
+    <div style="margin-left: 310px; width: 1300px; text-align: center; background: silver">
+        <p>
+            <button @click="addNode('topic')">addTopic</button>
+            <button @click="addNode('DB')">addDB</button>
+            <button @click="show">show</button>
+            <button @click="hide">hide</button>
+        </p>
+        <div id="demo"  @click="closeContextMenu"></div>
+        <ContextMenu />
+    </div>
 </template>
 
 <script>
-    import G6 from '@antv/g6';
+    import G6 from "@/global/g6";
+    import {topic, DB} from '@/global/g6/config/materials'
+    import ContextMenu from './containers/ContextMenu'
 
     export default {
-        name: "G6-example",
-        created() { //不能在created方法中初始化
-            //this.initG6()
+        name: "G6-Example",
+        data() {
+            return {
+                graphEditor: {}
+            }
         },
-        mounted(){
-            // console.log(G6.Global.version)
-            this.initG6()
+        components: {
+            ContextMenu
+        },
+        created() {
+            this.Utils.bus.$on('editor:deleteElement', this.deleteGraphElement)
+            this.Utils.bus.$on('editor:addNode', this.addNode)
+        },
+        mounted() {
+            this.initGraph();
         },
         methods: {
-            initG6() {
-                // 定义数据源
-                const data = {
-                    // 点集
-                    nodes: [
-                        {
-                            id: 'node1',                // 节点的唯一标识
-                            type: 'rect',               // 元素的图形, 默认为原形
-                            x: 100,                     // 节点横坐标
-                            y: 200,                     // 节点纵坐标
-                            size: 40,                   // 元素的大小
-                            label: '起始点',            // 节点文本
-                            style: {                    // 包裹样式属性的字段 style 与其他属性在数据结构上并行
-                                fill: 'rgba(53,190,182,0.96)',                          // 样式属性，元素的填充色
-                                stroke: '#882a7e',                                      // 样式属性，元素的描边色
-                                // ...                                                  // 其他样式属性
-                            }
-                        },
-                        {
-                            id: 'node2',
-                            x: 300,
-                            y: 200,
-                            label: '目标点',
-                        },
-                    ],
-                    // 边集
-                    edges: [
-                        // 表示一条从 node1 节点连接到 node2 节点的边
-                        {
-                            source: 'node1',                    // 起始点 id
-                            target: 'node2',                    // 目标点 id
-                            label: '我是连线',                  // 边的文本
-                        },
-                    ],
-                };
-
-
-                // 实例化 minimap 插件
-                const minimap = new G6.Minimap({
-                    size: [200, 100],
-                    className: 'minimap',
-                    type: 'delegate',
-                });
-                // 实例化 grid 插件: 网格可用于辅助用户在拖拽节点时对齐到网格
-                const grid = new G6.Grid();
-
-                // 创建 G6 图实例
-                let graph = new G6.Graph({
-                    container: 'mountNode',                     // 指定图画布的容器 id
+            // 初始化 graph
+            initGraph() {
+                this.graphEditor = new G6.Graph({
+                    container: 'demo',                     // 指定图画布的容器 id
                     // 画布宽高
-                    width: 800,
+                    width: 1200,
                     height: 500,
-                    // 节点在默认状态下的样式配置（style）和其他配置
                     defaultNode: {
-                        size: 50,                               // 节点大小
-                        // ...                                  // 节点的其他配置
-                        // 节点样式配置
-                        style: {
-                            fill: 'steelblue',                  // 节点填充色
-                            stroke: '#666',                     // 节点描边色
-                            lineWidth: 1,                       // 节点描边粗细
-                        },
-                        // 节点上的标签文本配置
-                        labelCfg: {
-                            // 节点上的标签文本样式配置
-                            style: {
-                                fill: '#fff',                   // 节点标签文字颜色
-                            },
-                        },
+                        anchorPoints: [
+                            [0.5, 0],
+                            [1, 0.5],
+                            [0.5, 1],
+                            [0, 0.5]
+                        ],
                     },
                     // 边在默认状态下的样式配置（style）和其他配置
                     defaultEdge: {
-                        // ...                                  // 边的其他配置
-                        // 边样式配置
                         style: {
-                            opacity: 0.6,                       // 边透明度
-                            stroke: 'grey',                     // 边描边颜色
+                            opacity: 0.4,                       // 边透明度
+                            stroke: '#000000',                     // 边描边颜色
+                            lineWidth: 3,                       // 节点描边粗细
+                            endArrow: {
+                                path: 'M 0,0 L 10,4 L 6,0 L 10,-4 Z',
+                                fill: '#333',
+                            },
                         },
-                        // 边上的标签文本配置
                         labelCfg: {
-                            autoRotate: true,                   // 边上的标签文本根据边的方向旋转
-                        },
-                    },
-                    // 节点不同状态下的样式集合
-                    nodeStateStyles: {
-                        // 鼠标 hover 上节点，即 hover 状态为 true 时的样式
-                        hover: {
-                            fill: 'lightsteelblue',
-                        },
-                        // 鼠标点击节点，即 click 状态为 true 时的样式
-                        click: {
-                            stroke: '#000',
-                            lineWidth: 3,
-                        },
-                    },
-                    // 边不同状态下的样式集合
-                    edgeStateStyles: {
-                        // 鼠标点击边，即 click 状态为 true 时的样式
-                        click: {
-                            stroke: 'blue',
+                            autoRotate: true,                       // 边上的标签文本根据边的方向旋转
                         },
                     },
                     modes: {
-                        default: [
-                            'drag-canvas',                          // 允许拖拽画布
-                            'zoom-canvas',                          // 允许放缩画布
-                            'drag-node',                            // 允许拖拽节点
-                            {
-                                type: 'tooltip',                    // 提示框
-                                formatText(model) {
-                                    // 提示框文本内容
-                                    const text = 'label: ' + model.label + '<br/> id: ' + model.id;
-                                    return text;
-                                },
-                            },
-                            {
-                                type: 'edge-tooltip',                    // 提示框
-                                formatText(model) {
-                                    // 提示框文本内容
-                                    const text = 'label: ' + model.label + '<br/> id: ' + model.id;
-                                    return text;
-                                },
-                            },
-                        ],
+                        'edit': ['add-edge', 'show-contextMenu', 'drag-canvas', 'drag-node',],
                     },
-                    plugins: [minimap, grid],                         // 将 minimap 实例配置到图上
                 });
 
-                // 读取数据
-                graph.data(data);
                 // 渲染图
-                graph.render();
+                this.graphEditor.render();
 
-                // 监听鼠标进入节点
-                graph.on('node:mouseenter', e => {
-                    const nodeItem = e.item;
-                    // 设置目标节点的 hover 状态 为 true
-                    graph.setItemState(nodeItem, 'hover', true);
-                });
-                // 监听鼠标离开节点
-                graph.on('node:mouseleave', e => {
-                    const nodeItem = e.item;
-                    // 设置目标节点的 hover 状态 false
-                    graph.setItemState(nodeItem, 'hover', false);
-                });
-                // 监听鼠标点击节点
-                graph.on('node:click', e => {
-                    // 先将所有当前有 click 状态的节点的 click 状态置为 false
-                    const clickNodes = graph.findAllByState('node', 'click');
-                    clickNodes.forEach(cn => {
-                        graph.setItemState(cn, 'click', false);
-                    });
-                    const nodeItem = e.item;
-                    // 设置目标节点的 click 状态 为 true
-                    graph.setItemState(nodeItem, 'click', true);
-                });
-                // 监听鼠标点击节点
-                graph.on('edge:click', e => {
-                    // 先将所有当前有 click 状态的边的 click 状态置为 false
-                    const clickEdges = graph.findAllByState('edge', 'click');
-                    clickEdges.forEach(ce => {
-                        graph.setItemState(ce, 'click', false);
-                    });
-                    const edgeItem = e.item;
-                    // 设置目标边的 click 状态 为 true
-                    graph.setItemState(edgeItem, 'click', true);
-                });
-            }
+                this.graphEditor.setMode('edit');
+
+                this.graphEditor.on('showContextmenu', (data) => {
+                    this.Utils.bus.$emit("contextmenu/open", data)
+                })
+
+            },
+
+            // 添加节点
+            addNode(type) {
+                switch (type) {
+                    case 'topic':
+                        this.graphEditor.addItem('node', topic(this.graphEditor.getNodes().length));
+                        break;
+                    case 'DB':
+                        this.graphEditor.addItem('node', DB(this.graphEditor.getNodes().length));
+                        break;
+                }
+            },
+
+            deleteGraphElement(item) {
+                console.log("item ：", item)
+                this.graphEditor.removeItem(item)
+            },
+
+            closeContextMenu() {
+                this.Utils.bus.$emit("contextmenu/close")
+            },
+
+            show() {
+                this.Utils.bus.$emit("contextmenu/open")
+            },
+            hide() {
+                this.Utils.bus.$emit("contextmenu/close")
+            },
+
         }
     }
 </script>
 
-<style>
-    /* 提示框的样式, 不能用scope */
-    .g6-tooltip {
-        border: 10px solid #e2e2e2;
-        border-radius: 4px;
-        font-size: 12px;
-        color: #35beb6;
-        background-color: rgba(255, 255, 255, 0.9);
-        padding: 10px 8px;
-        box-shadow: rgb(174, 174, 174) 0px 0px 10px;
-    }
+<style scoped>
+
 </style>

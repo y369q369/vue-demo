@@ -2,14 +2,18 @@
     <div style="margin-left: 310px; width: 1300px; text-align: center">
         <p>
             <button @click="addNode">addNode</button>
-            <button @click="addEdge">addEdge</button>
         </p>
         <div id="demo"></div>
+
+        <div class="context-menu">
+            <div>删除</div>
+        </div>
     </div>
 </template>
 
 <script>
-    import G6 from '@antv/g6'
+    import G6 from '@/components/G6Test/mode/Edit'
+    // import G6Test from '@antv/g6'
 
     export default {
         name: "G6-Demo",
@@ -19,6 +23,17 @@
                 graphData: {},
                 graphModel: '',
                 NodeNum: 3,
+            }
+        },
+        created() {
+            // 阻止浏览器默认右键菜单
+            document.oncontextmenu = function (event) {
+                if (event.stopPropagation) {
+                    event.stopPropagation()
+                }
+                if (event.preventDefault) {
+                    event.preventDefault()
+                }
             }
         },
         mounted() {
@@ -36,9 +51,21 @@
                             y: 200,                     // 节点纵坐标
                             size: 40,                   // 元素的大小
                             label: '起始点',            // 节点文本
+                            anchorPoints: [
+                                [0, 0],
+                                [0.33, 0],
+                                [0.66, 0],
+                                [1, 0],
+                                [1, 0.5],
+                                [1, 1],
+                                [0.66, 1],
+                                [0.33, 1],
+                                [0, 1],
+                                [0, 0.5]
+                            ],
                             style: {                    // 包裹样式属性的字段 style 与其他属性在数据结构上并行
-                                fill: 'rgba(53,190,182,0.96)',                          // 样式属性，元素的填充色
-                                stroke: '#882a7e',                                      // 样式属性，元素的描边色
+                                fill: '#D1F5FF',                          // 样式属性，元素的填充色
+                                stroke: '#000000',                                      // 样式属性，元素的描边色
                                 // ...                                                  // 其他样式属性
                             }
                         },
@@ -47,6 +74,18 @@
                             x: 300,
                             y: 200,
                             label: '目标点',
+                            anchorPoints: [
+                                [0, 0, {type: 'circle', style: {stroke: 'red', fill: 'white'}}],
+                                [0.33, 0, {type: 'circle', style: {stroke: 'red', fill: 'white'}}],
+                                [0.66, 0],
+                                [1, 0],
+                                [1, 0.5],
+                                [1, 1],
+                                [0.66, 1],
+                                [0.33, 1],
+                                [0, 1],
+                                [0, 0.5]
+                            ],
                         },
                     ],
                     // 边集
@@ -55,7 +94,9 @@
                         {
                             source: 'node1',                    // 起始点 id
                             target: 'node2',                    // 目标点 id
-                            label: '我是连线',                  // 边的文本
+                            sourceAnchor: 5,
+                            // 该边连入 target 点的第 0 个 anchorPoint，
+                            targetAnchor: 9,
                         },
                     ],
                 };
@@ -64,7 +105,7 @@
                     container: 'demo',                     // 指定图画布的容器 id
                     // 画布宽高
                     width: 1200,
-                    height: 800,
+                    height: 500,
                     // 节点在默认状态下的样式配置（style）和其他配置
                     defaultNode: {
                         type: 'rect',                           // 元素的图形设为矩形，  默认为原形
@@ -73,15 +114,15 @@
                         style: {
                             width: 200,
                             height: 50,
-                            fill: '#4d9eb3',                  // 节点填充色
-                            stroke: '#35beb6',                     // 节点描边色
+                            fill: '#DFEFCA',                  // 节点填充色
+                            stroke: '#000000',                     // 节点描边色
                             lineWidth: 1,                       // 节点描边粗细
                         },
                         // 节点上的标签文本配置
                         labelCfg: {
                             // 节点上的标签文本样式配置
                             style: {
-                                fill: '#fff',                   // 节点标签文字颜色
+                                fill: '#333',                   // 节点标签文字颜色
                             },
                         },
                     },
@@ -91,12 +132,12 @@
                         // 边样式配置
                         style: {
                             // opacity: 0.6,                       // 边透明度
-                            stroke: '#5436be',                     // 边描边颜色
+                            stroke: '#000000',                     // 边描边颜色
                             endArrow: {
                                 // 自定义箭头指向(0, 0)，尾部朝向 x 轴正方向的 path
                                 // path: 'M 0,0 L 20,10 L 20,-10 Z',
                                 path: 'M 0,0 L 10,4 L 6,0 L 10,-4 Z',
-                                fill: '#304156',
+                                fill: '#333',
                             },
                         },
                         // 边上的标签文本配置
@@ -106,38 +147,21 @@
                     },
                     // 节点不同状态下的样式集合
                     nodeStateStyles: {
+                        // 默认样式
+                        default: {
+                            fill: '#FFFFFF',
+                            fillOpacity: 1,
+                            stroke: '#000000',
+                            strokeOpacity: 1,
+                            cursor: 'move'
+                        },
                         // 鼠标 hover 上节点，即 hover 状态为 true 时的样式
                         hover: {
-                            fill: 'blue',
-                        },
-                        // 鼠标点击节点，即 click 状态为 true 时的样式
-                        click: {
-                            stroke: '#000',
-                            lineWidth: 3,
-                        },
-                    },
-                    // 边不同状态下的样式集合
-                    edgeStateStyles: {
-                        // 鼠标点击边，即 click 状态为 true 时的样式
-                        click: {
-                            stroke: 'blue',
+                            fill: '#51ffff',
                         },
                     },
                     modes: {
-                        default: [
-                            'drag-node',                            // 允许拖拽节点
-                            'click-add-edge',
-                            'click-select',
-                            {
-                                type: 'tooltip',                    // 提示框
-                                formatText(model) {
-                                    // 提示框文本内容
-                                    const text = 'label: ' + model.label + '<br/> id: ' + model.id;
-                                    return text;
-                                },
-                            },
-                        ],
-                        addEdge: ['click-add-edge', 'click-select'],
+                        'edit': ['edge-config', 'drag-canvas', 'drag-node',],
                     },
                 });
 
@@ -148,7 +172,10 @@
                 // 渲染图
                 this.graph.render();
 
-                this.event();
+                // this.event();
+                this.graph.setMode('edit');
+
+                console.log(this.graph);
             },
 
             addNode() {
@@ -158,7 +185,13 @@
                     x: 50 * nodeNum,
                     y: 100,
                     id: `node-${nodeNum}`, // Generate the unique id
-                    label: `topic-${nodeNum}`
+                    label: `topic-${nodeNum}`,
+                    anchorPoints: [
+                        [0.5, 0],
+                        [1, 0.5],
+                        [0.5, 1],
+                        [0, 0.5]
+                    ],
                 });
             },
 
@@ -168,9 +201,9 @@
 
             // 注册 自定义behavior
             registerBehavior() {
-                // Register a custom behavior: click two end nodes to add an edge
-                G6.registerBehavior('click-add-edge', {
-                    // Set the events and the corresponding responsing function for this behavior
+                // Register a custom global: click two end nodes to add an edge
+                G6.registerBehavior('edge-config-global', {
+                    // Set the events and the corresponding responsing function for this global
                     getEvents() {
                         return {
                             'node:click': 'onClick', // The event is canvas:click, the responsing function is onClick
@@ -226,24 +259,21 @@
                     },
                 });
             },
-
-            // 事件
-            event() {
-                // 监听鼠标进入节点
-                this.graph.on('node:mouseenter', e => {
-                    // 设置目标节点的 hover 状态 为 true
-                    this.graph.setItemState(e.item, 'hover', true);
-                });
-                // 监听鼠标离开节点
-                this.graph.on('node:mouseleave', e => {
-                    // 设置目标节点的 hover 状态 false
-                    this.graph.setItemState(e.item, 'hover', false);
-                });
-            },
         }
     }
 </script>
 
 <style scoped>
 
+    .context-menu {
+        position: absolute;
+        min-width: 120px;
+        width: auto !important;
+        z-index: 9999;
+        background: #FFF;
+        box-shadow: 0 0 5px 2px rgba(0, 0, 0, .1);
+        padding: 5px 0;
+        top: 245px;
+        left: 610px;
+    }
 </style>

@@ -1,38 +1,10 @@
 <template>
     <!-- 图的画布容器 -->
-    <div id="container"></div>
+    <div id="mountNode"></div>
 </template>
 
 <script>
     import G6 from '@antv/g6';
-    import insertCss from 'insert-css';
-
-    // define the CSS with the id of your menu
-    // 我们用 insert-css 演示引入自定义样式
-    // 推荐将样式添加到自己的样式文件中
-    // 若拷贝官方代码，别忘了 npm install insert-css
-    insertCss(`
-      #contextMenu {
-        position: absolute;
-        list-style-type: none;
-        padding: 10px 8px;
-        left: -150px;
-        background-color: rgba(255, 255, 255, 0.9);
-        border: 1px solid #e2e2e2;
-        border-radius: 4px;
-        font-size: 12px;
-        color: #545454;
-      }
-      #contextMenu li {
-        cursor: pointer;
-            list-style-type:none;
-        list-style: none;
-        margin-left: 0px;
-      }
-      #contextMenu li:hover {
-        color: #aaa;
-      }
-    `);
 
     export default {
         name: "G6-example",
@@ -40,7 +12,7 @@
             //this.initG6()
         },
         mounted(){
-            // console.log(G6.Global.version)
+            // console.log(G6Test.Global.version)
             this.initG6()
         },
         methods: {
@@ -90,9 +62,9 @@
                 // 实例化 grid 插件: 网格可用于辅助用户在拖拽节点时对齐到网格
                 const grid = new G6.Grid();
 
-                // 创建 G6 图实例
+                // 创建 G6Test 图实例
                 let graph = new G6.Graph({
-                    container: 'container',                     // 指定图画布的容器 id
+                    container: 'mountNode',                     // 指定图画布的容器 id
                     // 画布宽高
                     width: 800,
                     height: 500,
@@ -151,6 +123,22 @@
                             'drag-canvas',                          // 允许拖拽画布
                             'zoom-canvas',                          // 允许放缩画布
                             'drag-node',                            // 允许拖拽节点
+                            {
+                                type: 'tooltip',                    // 提示框
+                                formatText(model) {
+                                    // 提示框文本内容
+                                    const text = 'label: ' + model.label + '<br/> id: ' + model.id;
+                                    return text;
+                                },
+                            },
+                            {
+                                type: 'edge-tooltip',                    // 提示框
+                                formatText(model) {
+                                    // 提示框文本内容
+                                    const text = 'label: ' + model.label + '<br/> id: ' + model.id;
+                                    return text;
+                                },
+                            },
                         ],
                     },
                     plugins: [minimap, grid],                         // 将 minimap 实例配置到图上
@@ -173,7 +161,18 @@
                     // 设置目标节点的 hover 状态 false
                     graph.setItemState(nodeItem, 'hover', false);
                 });
-                // 监听鼠标点击边
+                // 监听鼠标点击节点
+                graph.on('node:click', e => {
+                    // 先将所有当前有 click 状态的节点的 click 状态置为 false
+                    const clickNodes = graph.findAllByState('node', 'click');
+                    clickNodes.forEach(cn => {
+                        graph.setItemState(cn, 'click', false);
+                    });
+                    const nodeItem = e.item;
+                    // 设置目标节点的 click 状态 为 true
+                    graph.setItemState(nodeItem, 'click', true);
+                });
+                // 监听鼠标点击节点
                 graph.on('edge:click', e => {
                     // 先将所有当前有 click 状态的边的 click 状态置为 false
                     const clickEdges = graph.findAllByState('edge', 'click');
@@ -183,43 +182,6 @@
                     const edgeItem = e.item;
                     // 设置目标边的 click 状态 为 true
                     graph.setItemState(edgeItem, 'click', true);
-                });
-
-
-                const descriptionDiv = document.createElement('div');
-                descriptionDiv.id = 'discription';
-                descriptionDiv.innerHTML = 'Right click a node to activate a contextMenu.';
-                document.getElementById('container').appendChild(descriptionDiv);
-                // JSX and HTML templates are available for the menu
-                // create ul
-                const conextMenuContainer = document.createElement('ul');
-                conextMenuContainer.id = 'contextMenu';
-
-                // create li
-                const firstLi = document.createElement('li');
-                firstLi.innerText = 'Option 1';
-                firstLi.addEventListener("click", function() {
-                    console.log(1)
-                })
-                conextMenuContainer.appendChild(firstLi);
-
-                const lastLi = document.createElement('li');
-                lastLi.innerText = 'Option 2';
-                lastLi.addEventListener("click", function() {
-                    console.log(2)
-                })
-                conextMenuContainer.appendChild(lastLi);
-                document.getElementById('container').appendChild(conextMenuContainer);
-
-                graph.on('node:contextmenu', evt => {
-                    evt.preventDefault();
-                    evt.stopPropagation();
-                    conextMenuContainer.style.left = `${evt.x + 20}px`;
-                    conextMenuContainer.style.top = `${evt.y}px`;
-                });
-
-                graph.on('node:mouseleave', () => {
-                    conextMenuContainer.style.left = '-150px';
                 });
             }
         }
